@@ -1,0 +1,51 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/usr/share/arduino/hardware/**",
+                "/usr/share/arduino/libraries/**",
+                "/usr/lib/avr/include/**"
+            ],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": false,
+                "path": [
+                    "/usr/lib/avr/include",
+                    "/usr/share/arduino/hardware",
+                    "/usr/share/arduino/libraries",
+                    "${workspaceRoot}"
+                ]
+            },
+            "defines": [],
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "clang-x64"
+        },
+        {
+            "name": "OSX",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/Applications/Arduino.app/Contents/Java/hardware/**",
+                "/Applications/Arduino.app/Contents/Java/libraries/**",
+                "/Applications/Arduino.app/Contents/Java/hardware/tools/avr/include/**"
+            ],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": false,
+                "path": [
+                    "/Applications/Arduino.app/Contents/Java/hardware/tools/avr/include",
+                    "/Applications/Arduino.app/Contents/Java/hardware",
+                    "/Applications/Arduino.app/Contents/Java/libraries",
+                    "${workspaceRoot}"
+                ]
+            },
+            "defines": [],
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "clang-x64"
+        }
+    ],
+    "version": 3
+}
