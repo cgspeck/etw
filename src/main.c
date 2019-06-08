@@ -1,12 +1,23 @@
-#include <Arduino.h>
+#include <Joystick.h>
 
 # define ENCODER_PULSES_PER_REV 4000
 # define JS_VAL_MIN 0
 # define JS_VAL_MAX 1023
 # define JS_MIN_MAX_REVS 9
-// INPUT PINS
+// ENCODER INPUT PINS
 #define  A_PHASE 2
 #define  B_PHASE 3
+
+// JOYSTICK
+Joystick_ Joystick(
+  JOYSTICK_DEFAULT_REPORT_ID, 
+  JOYSTICK_TYPE_JOYSTICK,
+  0,
+  0,
+  true, true, false,
+  false, false, false,
+  false, false, false, false, false
+);
 
 int JS_MIDPOINT = (JS_VAL_MIN + JS_VAL_MAX) / 2;
 int JS_RANGE;
@@ -31,6 +42,13 @@ void processPulse() {
   }
 }
 
+void resetVals() {
+  JS_AXIS_VAL = JS_MIDPOINT;
+  ENCODER_VAL = 0;
+  PREVIOUS_ENCODER_VAL = 0;
+  Joystick.setXAxis(JS_AXIS_VAL);
+  Joystick.setYAxis(PREVIOUS_ENCODER_VAL);
+}
 
 void setup() {
   JS_RANGE = JS_VAL_MAX + abs(JS_VAL_MIN);
@@ -41,13 +59,9 @@ void setup() {
   pinMode(A_PHASE, INPUT);
   pinMode(B_PHASE, INPUT);
   attachInterrupt(digitalPinToInterrupt(A_PHASE), processPulse, RISING);
-}
-
-
-void resetVals() {
-  JS_AXIS_VAL = JS_MIDPOINT;
-  ENCODER_VAL = 0;
-  PREVIOUS_ENCODER_VAL = 0;
+  Joystick.begin();
+  Joystick.setXAxisRange(JS_VAL_MIN, JS_VAL_MAX);
+  Joystick.setYAxisRange(ENCODER_MIN_VAL, ENCODER_MAX_VAL);
 }
 
 void loop() {
@@ -61,5 +75,7 @@ void loop() {
     }
     PREVIOUS_ENCODER_VAL = ENCODER_VAL;
     interrupts();
+    Joystick.setXAxis(JS_AXIS_VAL);
+    Joystick.setYAxis(PREVIOUS_ENCODER_VAL);
   }
 }
