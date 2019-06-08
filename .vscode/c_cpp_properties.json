@@ -4,6 +4,7 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
+                "/home/chris/arduino-1.8.9/hardware/**",
                 "/usr/share/arduino/hardware/**",
                 "/usr/share/arduino/libraries/**",
                 "/usr/lib/avr/include/**"

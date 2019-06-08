@@ -1,5 +1,12 @@
+// hack to make VS Code work
+#ifndef ARDUINO
+  #define ARDUINO 189
+#endif
+
+#include <Arduino.h>
+#include <SPI.h>
 #include <Joystick.h>
-#include "LedControl.h"
+#include "display.h"
 
 # define ENCODER_PULSES_PER_REV 4000
 # define JS_VAL_MIN 0
@@ -13,10 +20,7 @@
 #define PIN_IN_RESET 4
 
 // DISPLAY
-
-// display
-LedControl lc1=LedControl(12,11,10,1); 
-
+#define LATCH_PIN 10
 // JOYSTICK
 Joystick_ Joystick(
   JOYSTICK_DEFAULT_REPORT_ID, 
@@ -55,6 +59,16 @@ void processPulse() {
   }
 }
 
+int scaledVal;
+
+void updateDisplay() {
+  // transpose JS vals around 0
+  int transposedVal = JS_AXIS_VAL - transpositionFactor;
+  // now scale it
+  scaledVal = (transposedVal / transposedMax) * 100;
+  showNumber(scaledVal, LATCH_PIN);
+}
+
 void resetVals() {
   JS_AXIS_VAL = JS_MIDPOINT;
   ENCODER_VAL = 0;
@@ -79,48 +93,10 @@ void setup() {
   Joystick.setXAxisRange(JS_VAL_MIN, JS_VAL_MAX);
   Joystick.setYAxisRange(ENCODER_MIN_VAL, ENCODER_MAX_VAL);
 
-  for(int index=0;index<lc1.getDeviceCount();index++) {
-    lc1.shutdown(index,false);
-    lc1.setIntensity(index, 8);
-  }
-}
-
-void printNumber(int v) {  
-    int ones;  
-    int tens;  
-    int hundreds; 
-
-    boolean negative=false;
-
-    if(v < -999 || v > 999)  
-        return;  
-    if(v<0) {  
-        negative=true; 
-        v=v*-1;  
-    }
-    ones=v%10;  
-    v=v/10;  
-    tens=v%10;  
-    v=v/10; hundreds=v;  
-    if(negative) {  
-        //print character '-' in the leftmost column  
-        lc1.setChar(0,3,'-',false);  } 
-    else {
-        //print a blank in the sign column  
-        lc1.setChar(0,3,' ',false);  
-    }  
-    //Now print the number digit by digit 
-    lc1.setDigit(0,2,(byte)hundreds,false);
-    lc1.setDigit(0,1,(byte)tens,false); 
-    lc1.setDigit(0,0,(byte)ones,false); 
-}
-
-void updateDisplay() {
-  // transpose JS vals around 0
-  int transposedVal = JS_AXIS_VAL - transpositionFactor;
-  // now scale it
-  int scaledVal = (transposedVal / transposedMax) * 100;
-  printNumber(scaledVal);
+  pinMode(LATCH_PIN,OUTPUT);
+  SPI.setBitOrder(MSBFIRST);
+  SPI.begin();
+  setupDisplay(LATCH_PIN);
 }
 
 void loop() {
@@ -138,4 +114,5 @@ void loop() {
     Joystick.setYAxis(PREVIOUS_ENCODER_VAL);
     updateDisplay();
   }
+  showNumber(scaledVal, LATCH_PIN);
 }
