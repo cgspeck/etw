@@ -9,6 +9,14 @@
 #define  A_PHASE 2
 #define  B_PHASE 3
 
+// RESET BUTTON
+#define PIN_IN_RESET 4
+
+// DISPLAY
+
+// display
+LedControl lc1=LedControl(12,11,10,1); 
+
 // JOYSTICK
 Joystick_ Joystick(
   JOYSTICK_DEFAULT_REPORT_ID, 
@@ -33,9 +41,6 @@ int PREVIOUS_ENCODER_VAL;
 int ENCODER_AXIS_STEP;
 int ENCODER_MIN_VAL;
 int ENCODER_MAX_VAL;
-
-// display
-LedControl lc1=LedControl(12,11,10,1); 
 
 void processPulse() {
   // stuff that figures out direction and increments or decrements the counter
@@ -65,6 +70,8 @@ void setup() {
   ENCODER_MAX_VAL = ((JS_MIN_MAX_REVS / 2) * ENCODER_PULSES_PER_REV);
   ENCODER_MIN_VAL = ENCODER_MAX_VAL * -1;
   resetVals();
+  pinMode(PIN_IN_RESET, INPUT_PULLUP);
+  attachInterrupt(digitalPinToInterrupt(PIN_IN_RESET), resetVals, RISING);
   pinMode(A_PHASE, INPUT);
   pinMode(B_PHASE, INPUT);
   attachInterrupt(digitalPinToInterrupt(A_PHASE), processPulse, RISING);
