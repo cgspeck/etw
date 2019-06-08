@@ -1,4 +1,5 @@
 #include <Joystick.h>
+#include "LedControl.h"
 
 # define ENCODER_PULSES_PER_REV 4000
 # define JS_VAL_MIN 0
@@ -21,13 +22,20 @@ Joystick_ Joystick(
 
 int JS_MIDPOINT = (JS_VAL_MIN + JS_VAL_MAX) / 2;
 int JS_RANGE;
-
 int JS_AXIS_VAL;
+
+const int transpositionFactor = 0 - JS_MIDPOINT;
+const int transposedMin = JS_VAL_MIN - transpositionFactor;
+const int transposedMax = JS_VAL_MAX - transpositionFactor;
+
 volatile int ENCODER_VAL;
 int PREVIOUS_ENCODER_VAL;
 int ENCODER_AXIS_STEP;
 int ENCODER_MIN_VAL;
 int ENCODER_MAX_VAL;
+
+// display
+LedControl lc1=LedControl(12,11,10,1); 
 
 void processPulse() {
   // stuff that figures out direction and increments or decrements the counter
@@ -48,6 +56,7 @@ void resetVals() {
   PREVIOUS_ENCODER_VAL = 0;
   Joystick.setXAxis(JS_AXIS_VAL);
   Joystick.setYAxis(PREVIOUS_ENCODER_VAL);
+  updateDisplay();
 }
 
 void setup() {
@@ -62,6 +71,49 @@ void setup() {
   Joystick.begin();
   Joystick.setXAxisRange(JS_VAL_MIN, JS_VAL_MAX);
   Joystick.setYAxisRange(ENCODER_MIN_VAL, ENCODER_MAX_VAL);
+
+  for(int index=0;index<lc1.getDeviceCount();index++) {
+    lc1.shutdown(index,false);
+    lc1.setIntensity(index, 8);
+  }
+}
+
+void printNumber(int v) {  
+    int ones;  
+    int tens;  
+    int hundreds; 
+
+    boolean negative=false;
+
+    if(v < -999 || v > 999)  
+        return;  
+    if(v<0) {  
+        negative=true; 
+        v=v*-1;  
+    }
+    ones=v%10;  
+    v=v/10;  
+    tens=v%10;  
+    v=v/10; hundreds=v;  
+    if(negative) {  
+        //print character '-' in the leftmost column  
+        lc1.setChar(0,3,'-',false);  } 
+    else {
+        //print a blank in the sign column  
+        lc1.setChar(0,3,' ',false);  
+    }  
+    //Now print the number digit by digit 
+    lc1.setDigit(0,2,(byte)hundreds,false);
+    lc1.setDigit(0,1,(byte)tens,false); 
+    lc1.setDigit(0,0,(byte)ones,false); 
+}
+
+void updateDisplay() {
+  // transpose JS vals around 0
+  int transposedVal = JS_AXIS_VAL - transpositionFactor;
+  // now scale it
+  int scaledVal = (transposedVal / transposedMax) * 100;
+  printNumber(scaledVal);
 }
 
 void loop() {
@@ -77,5 +129,6 @@ void loop() {
     interrupts();
     Joystick.setXAxis(JS_AXIS_VAL);
     Joystick.setYAxis(PREVIOUS_ENCODER_VAL);
+    updateDisplay();
   }
 }
