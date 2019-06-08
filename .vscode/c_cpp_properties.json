@@ -45,7 +45,30 @@
             "cStandard": "c11",
             "cppStandard": "c++17",
             "intelliSenseMode": "clang-x64"
+        },
+        {
+            "name": "Arch",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/usr/share/arduino/hardware/**",
+                "/usr/share/arduino/hardware/archlinux-arduino/avr/libraries/**",
+                "/usr/avr/include/**"
+            ],
+            "browse": {
+                "limitSymbolsToIncludedHeaders": false,
+                "path": [
+                    "/usr/avr/include",
+                    "/usr/share/arduino/hardware",
+                    "/usr/share/arduino/hardware/archlinux-arduino/avr/libraries",
+                    "${workspaceRoot}"
+                ]
+            },
+            "defines": [],
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c11",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "clang-x64"
         }
     ],
-    "version": 3
+    "version": 4
 }
