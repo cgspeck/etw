@@ -12,5 +12,5 @@ void _displayDigit(int value, int position, int displayDecimalPoint, int latchPi
 
 void _displayNegativeSign(int latchPin);
 
-void showNumber(double number, int latchPin);
+void showNumber(double number, int latchPin, bool showDecimals = true);
 #endif

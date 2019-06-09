@@ -72,7 +72,7 @@ void _displayNegativeSign(int latchPin) {
   _maxTransfer(1, 191, latchPin);
 }
 
-void showNumber(double number, int latchPin) {
+void showNumber(double number, int latchPin, bool showDecimals) {
   long num = number;
 
   if(num < 0) {
@@ -80,15 +80,15 @@ void showNumber(double number, int latchPin) {
     num = num * -1;
   }
 
-  int ShowDec [8];
-  for (int x = 1; x < 9; x++) {
-    ShowDec[x] = 0;
+  int _showDec [8];
+  for (int x = 0; x < 8; x++) {
+    _showDec[x] = 0;
   }
 
-  if (num  < 1000000){                                                                     
+  if (num  < 1000000 && showDecimals){
     num = num*100;
-    ShowDec[6]=1;
-    ShowDec[7]=0;                                   
+    _showDec[6]=1;
+    _showDec[7]=0;
   }
 
   int digits [8];
@@ -101,21 +101,23 @@ void showNumber(double number, int latchPin) {
   digits[7] = (num/10)%10;
   digits[8] = (num/1)%10;
 
-  int dectest = 0;
-  for (int x = 1; x<8; x++) {
-    if ((dectest == 0) && (digits[x] == 0)) {
-      digits[x] = 11;
-    } else {
-      dectest = 1;
+  if (showDecimals) {
+    int dectest = 0;
+    for (int x = 1; x<8; x++) {
+      if ((dectest == 0) && (digits[x] == 0)) {
+        digits[x] = 11;
+      } else {
+        dectest = 1;
+      }
     }
   }
 
-  _displayDigit(digits[1],1,ShowDec[1], latchPin);
-  _displayDigit(digits[2],2,ShowDec[2], latchPin);
-  _displayDigit(digits[3],3,ShowDec[3], latchPin);
-  _displayDigit(digits[4],4,ShowDec[4], latchPin);
-  _displayDigit(digits[5],5,ShowDec[5], latchPin);
-  _displayDigit(digits[6],6,ShowDec[6], latchPin);
-  _displayDigit(digits[7],7,ShowDec[7], latchPin);
-  _displayDigit(digits[8],8,ShowDec[8], latchPin);
+  _displayDigit(digits[1],1,_showDec[1], latchPin);
+  _displayDigit(digits[2],2,_showDec[2], latchPin);
+  _displayDigit(digits[3],3,_showDec[3], latchPin);
+  _displayDigit(digits[4],4,_showDec[4], latchPin);
+  _displayDigit(digits[5],5,_showDec[5], latchPin);
+  _displayDigit(digits[6],6,_showDec[6], latchPin);
+  _displayDigit(digits[7],7,_showDec[7], latchPin);
+  _displayDigit(digits[8],8,_showDec[8], latchPin);
 }
