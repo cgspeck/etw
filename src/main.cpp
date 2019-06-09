@@ -62,7 +62,7 @@ void processPulse() {
     ENCODER_VAL += 1;
   } else if (ENCODER_VAL > ENCODER_MIN_VAL) {
     // CW
-    ENCODER_VAL += 1;
+    ENCODER_VAL -= 1;
   }
 }
 
