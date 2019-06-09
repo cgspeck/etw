@@ -132,12 +132,14 @@ void setup() {
 void loop() {
   if (abs(ENCODER_VAL - PREVIOUS_ENCODER_VAL) >= ENCODER_AXIS_STEP) {
     noInterrupts();
-    // increase/decrease axis val
-    if (ENCODER_VAL > PREVIOUS_ENCODER_VAL) {
-      JS_AXIS_VAL += 1;
-    } else {
-      JS_AXIS_VAL -= 1;
-    }
+    // reset JS_AXIS_VAL
+    JS_AXIS_VAL = map(
+      ENCODER_VAL,
+      ENCODER_MIN_VAL,
+      ENCODER_MAX_VAL,
+      JS_VAL_MIN,
+      JS_VAL_MAX
+    );
     PREVIOUS_ENCODER_VAL = ENCODER_VAL;
     interrupts();
     updateScaledValues();
