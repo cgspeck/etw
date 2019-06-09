@@ -71,21 +71,7 @@ void processPulse() {
 int scaledVal;
 
 void updateScaledValues() {
-  // transpose JS vals around 0
-  float transposedVal = JS_AXIS_VAL - transpositionFactor;
-  // float elevator_percent = transposedVal / transposedMax;
-  #ifndef JOYSTICK_ENABLED
-    Serial.print("Transposition factor: ");
-    Serial.println(transpositionFactor);
-    Serial.print("Transposed value: ");
-    Serial.println(transposedVal);
-    Serial.print("Transposed max: ");
-    Serial.println(transposedMax);
-    // Serial.print("Elevator PC: ");
-    // Serial.println(elevator_percent);
-  #endif
-  // now scale it
-  scaledVal = (transposedVal / transposedMax) * 100;
+  scaledVal = map(JS_AXIS_VAL, JS_VAL_MIN, JS_VAL_MAX, -100, 100);
 }
 
 void resetVals() {
