@@ -11,7 +11,7 @@
 
 //#define JOYSTICK_ENABLE
 
-# define ENCODER_PULSES_PER_REV 4000
+# define ENCODER_PULSES_PER_REV 400
 # define JS_VAL_MIN 0
 # define JS_VAL_MAX 1023
 
