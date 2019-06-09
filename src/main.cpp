@@ -13,7 +13,7 @@
 #include "debounce.h"
 #include "display.h"
 
-//#define JOYSTICK_ENABLE
+#define JOYSTICK_ENABLE
 
 # define ENCODER_PULSES_PER_REV 400
 # define JS_VAL_MIN 0
@@ -48,10 +48,6 @@ unsigned int inputResetButtonHistory = 0;
 
 int JS_MIDPOINT = round((JS_VAL_MIN + (float)JS_VAL_MAX) / 2);
 int JS_AXIS_VAL;
-
-const int transpositionFactor = abs(0 - JS_MIDPOINT);
-const int transposedMin = JS_VAL_MIN - transpositionFactor;
-const int transposedMax = JS_VAL_MAX - transpositionFactor;
 
 volatile int ENCODER_VAL;
 int PREVIOUS_ENCODER_VAL;
