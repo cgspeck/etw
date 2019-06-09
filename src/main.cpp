@@ -6,7 +6,10 @@
 #include <Arduino.h>
 #include <SPI.h>
 #include <Joystick.h>
+#include "debounce.h"
 #include "display.h"
+
+//#define JOYSTICK_ENABLE
 
 # define ENCODER_PULSES_PER_REV 4000
 # define JS_VAL_MIN 0
@@ -17,20 +20,24 @@
 #define  B_PHASE 3
 
 // RESET BUTTON
-#define PIN_IN_RESET 4
+#define PIN_IN_RESET 13
+unsigned int inputResetButtonHistory = 0;
 
 // DISPLAY
 #define LATCH_PIN 10
+
 // JOYSTICK
-Joystick_ Joystick(
-  JOYSTICK_DEFAULT_REPORT_ID, 
-  JOYSTICK_TYPE_JOYSTICK,
-  0,
-  0,
-  true, true, false,
-  false, false, false,
-  false, false, false, false, false
-);
+#ifdef JOYSTICK_ENABLE
+  Joystick_ Joystick(
+    JOYSTICK_DEFAULT_REPORT_ID, 
+    JOYSTICK_TYPE_JOYSTICK,
+    0,
+    0,
+    true, true, false,
+    false, false, false,
+    false, false, false, false, false
+  );
+#endif
 
 int JS_MIDPOINT = (JS_VAL_MIN + JS_VAL_MAX) / 2;
 int JS_RANGE;
@@ -61,21 +68,22 @@ void processPulse() {
 
 int scaledVal;
 
-void updateDisplay() {
+void updateScaledValues() {
   // transpose JS vals around 0
   int transposedVal = JS_AXIS_VAL - transpositionFactor;
   // now scale it
   scaledVal = (transposedVal / transposedMax) * 100;
-  showNumber(scaledVal, LATCH_PIN);
 }
 
 void resetVals() {
   JS_AXIS_VAL = JS_MIDPOINT;
   ENCODER_VAL = 0;
   PREVIOUS_ENCODER_VAL = 0;
-  Joystick.setXAxis(JS_AXIS_VAL);
-  Joystick.setYAxis(PREVIOUS_ENCODER_VAL);
-  updateDisplay();
+  #ifdef JOYSTICK_ENABLE
+    Joystick.setXAxis(JS_AXIS_VAL);
+    Joystick.setYAxis(PREVIOUS_ENCODER_VAL);
+  #endif
+  updateScaledValues();
 }
 
 void setup() {
@@ -89,9 +97,14 @@ void setup() {
   pinMode(A_PHASE, INPUT);
   pinMode(B_PHASE, INPUT);
   attachInterrupt(digitalPinToInterrupt(A_PHASE), processPulse, RISING);
-  Joystick.begin();
-  Joystick.setXAxisRange(JS_VAL_MIN, JS_VAL_MAX);
-  Joystick.setYAxisRange(ENCODER_MIN_VAL, ENCODER_MAX_VAL);
+
+  #ifdef JOYSTICK_ENABLE
+    Joystick.begin();
+    Joystick.setXAxisRange(JS_VAL_MIN, JS_VAL_MAX);
+    Joystick.setYAxisRange(ENCODER_MIN_VAL, ENCODER_MAX_VAL);
+  #else
+    Serial.begin(9600);
+  #endif
 
   pinMode(LATCH_PIN,OUTPUT);
   SPI.setBitOrder(MSBFIRST);
@@ -110,9 +123,32 @@ void loop() {
     }
     PREVIOUS_ENCODER_VAL = ENCODER_VAL;
     interrupts();
+    updateScaledValues();
+  }
+
+  updateButton(&inputResetButtonHistory, PIN_IN_RESET);
+
+  if (isButtonPressed(&inputResetButtonHistory)) {
+    /* Reset button has just been released.
+      
+      Names are confusing, logic is flipped because of internal pull up resistor
+    */
+    #ifndef JOYSTICK_ENABLE
+      Serial.println("************************** RESET **************************");
+    #endif
+    resetVals();
+  }
+
+  #ifdef JOYSTICK_ENABLE
     Joystick.setXAxis(JS_AXIS_VAL);
     Joystick.setYAxis(PREVIOUS_ENCODER_VAL);
-    updateDisplay();
-  }
+  #else
+    Serial.print("PREVIOUS ENCODER VAL: ");
+    Serial.println(PREVIOUS_ENCODER_VAL);
+    Serial.print("JS_AXIS_VAL: ");
+    Serial.println(JS_AXIS_VAL);
+    Serial.print("SCALED BAL: ");
+    Serial.println(scaledVal);
+  #endif
   showNumber(scaledVal, LATCH_PIN);
 }

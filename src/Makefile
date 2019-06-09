@@ -2,7 +2,7 @@
 
 USER_LIB_PATH = ../lib
 BOARD_TAG = leonardo
-MONITOR_PORT=/dev/ttyUSB0
+MONITOR_PORT=/dev/ttyACM3
 OBJDIR = ../bin
 TARGET = etw
 
