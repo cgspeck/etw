@@ -43,7 +43,7 @@ int JS_MIDPOINT = (JS_VAL_MIN + JS_VAL_MAX) / 2;
 int JS_RANGE;
 int JS_AXIS_VAL;
 
-const int transpositionFactor = 0 - JS_MIDPOINT;
+const int transpositionFactor = abs(0 - JS_MIDPOINT);
 const int transposedMin = JS_VAL_MIN - transpositionFactor;
 const int transposedMax = JS_VAL_MAX - transpositionFactor;
 
@@ -70,7 +70,18 @@ int scaledVal;
 
 void updateScaledValues() {
   // transpose JS vals around 0
-  int transposedVal = JS_AXIS_VAL - transpositionFactor;
+  float transposedVal = JS_AXIS_VAL - transpositionFactor;
+  // float elevator_percent = transposedVal / transposedMax;
+  #ifndef JOYSTICK_ENABLED
+    Serial.print("Transposition factor: ");
+    Serial.println(transpositionFactor);
+    Serial.print("Transposed value: ");
+    Serial.println(transposedVal);
+    Serial.print("Transposed max: ");
+    Serial.println(transposedMax);
+    // Serial.print("Elevator PC: ");
+    // Serial.println(elevator_percent);
+  #endif
   // now scale it
   scaledVal = (transposedVal / transposedMax) * 100;
 }
@@ -147,7 +158,7 @@ void loop() {
     Serial.println(PREVIOUS_ENCODER_VAL);
     Serial.print("JS_AXIS_VAL: ");
     Serial.println(JS_AXIS_VAL);
-    Serial.print("SCALED BAL: ");
+    Serial.print("SCALED VAL: ");
     Serial.println(scaledVal);
   #endif
   showNumber(scaledVal, LATCH_PIN);
