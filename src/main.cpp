@@ -3,7 +3,11 @@
   #define ARDUINO 189
 #endif
 
+
 #include <Arduino.h>
+#undef round
+#include <math.h>
+
 #include <SPI.h>
 #include <Joystick.h>
 #include "debounce.h"
@@ -42,7 +46,7 @@ unsigned int inputResetButtonHistory = 0;
   );
 #endif
 
-int JS_MIDPOINT = (JS_VAL_MIN + JS_VAL_MAX) / 2;
+int JS_MIDPOINT = round((JS_VAL_MIN + (float)JS_VAL_MAX) / 2);
 int JS_AXIS_VAL;
 
 const int transpositionFactor = abs(0 - JS_MIDPOINT);
