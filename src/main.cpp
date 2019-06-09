@@ -14,7 +14,10 @@
 # define ENCODER_PULSES_PER_REV 4000
 # define JS_VAL_MIN 0
 # define JS_VAL_MAX 1023
+
+// how many times you have to spin the elevator wheel to go from min to max
 # define JS_MIN_MAX_REVS 9
+
 // ENCODER INPUT PINS
 #define  A_PHASE 2
 #define  B_PHASE 3
@@ -40,7 +43,6 @@ unsigned int inputResetButtonHistory = 0;
 #endif
 
 int JS_MIDPOINT = (JS_VAL_MIN + JS_VAL_MAX) / 2;
-int JS_RANGE;
 int JS_AXIS_VAL;
 
 const int transpositionFactor = abs(0 - JS_MIDPOINT);
@@ -98,9 +100,13 @@ void resetVals() {
 }
 
 void setup() {
-  JS_RANGE = JS_VAL_MAX + abs(JS_VAL_MIN);
-  ENCODER_AXIS_STEP = ENCODER_PULSES_PER_REV / (JS_RANGE/JS_MIN_MAX_REVS);
-  ENCODER_MAX_VAL = ((JS_MIN_MAX_REVS / 2) * ENCODER_PULSES_PER_REV);
+  int jsRange = JS_VAL_MAX + abs(JS_VAL_MIN);
+
+  // 444
+  ENCODER_AXIS_STEP = ENCODER_PULSES_PER_REV / (jsRange/JS_MIN_MAX_REVS);
+  // 18000
+  ENCODER_MAX_VAL = (((float)JS_MIN_MAX_REVS / 2) * ENCODER_PULSES_PER_REV);
+  // -18000
   ENCODER_MIN_VAL = ENCODER_MAX_VAL * -1;
   resetVals();
   pinMode(PIN_IN_RESET, INPUT_PULLUP);
