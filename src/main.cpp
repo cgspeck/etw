@@ -116,6 +116,7 @@ void setup() {
   pinMode(PIN_IN_RESET, INPUT_PULLUP);
   pinMode(PIN_IN_ARM, INPUT_PULLUP);
   pinMode(PIN_IN_DISARM, INPUT_PULLUP);
+  armed = !digitalRead(PIN_IN_ARM); // logic flipped!
   attachInterrupt(digitalPinToInterrupt(PIN_IN_RESET), resetVals, RISING);
   pinMode(A_PHASE, INPUT);
   pinMode(B_PHASE, INPUT);
@@ -127,6 +128,7 @@ void setup() {
     #ifdef TWO_AXIS
       Joystick.setYAxisRange(ENCODER_MIN_VAL, ENCODER_MAX_VAL);
     #endif
+    Joystick.pressButton(armed ? 0 : 1);
   #else
     Serial.begin(9600);
   #endif
@@ -194,13 +196,16 @@ void loop() {
   if (modeChanged) {
     #ifndef JOYSTICK_ENABLE
       Serial.println("************************** MODE CHANGED **************************");
+    #else
+      Joystick.pressButton(armed ? 0 : 1);
     #endif
     previousModeChanged = currentMillis;
-    Joystick.pressButton(armed ? 0 : 1);
   } else if ((unsigned long)(currentMillis - previousModeChanged) > JS_BUTTON_INTERVAL)
   {
-    Joystick.releaseButton(0);
-    Joystick.releaseButton(1);
+    #ifdef JOYSTICK_ENABLE
+      Joystick.releaseButton(0);
+      Joystick.releaseButton(1);
+    #endif
   }
 
   #ifdef JOYSTICK_ENABLE
