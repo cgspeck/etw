@@ -14,6 +14,7 @@
 #include "display.h"
 
 #define JOYSTICK_ENABLE
+// #define TWO_AXIS
 
 # define ENCODER_PULSES_PER_REV 400
 # define JS_VAL_MIN 0
@@ -46,7 +47,13 @@ bool armed = true;
     JOYSTICK_TYPE_JOYSTICK,
     2,
     0,
-    true, true, false,
+    true,
+    #ifdef TWO_AXIS
+      true,
+    #else
+      false,
+    #endif
+    false,
     false, false, false,
     false, false, false, false, false
   );
@@ -86,7 +93,9 @@ void resetVals() {
   PREVIOUS_ENCODER_VAL = 0;
   #ifdef JOYSTICK_ENABLE
     Joystick.setXAxis(JS_AXIS_VAL);
-    Joystick.setYAxis(PREVIOUS_ENCODER_VAL);
+    #ifdef TWO_AXIS
+      Joystick.setYAxis(PREVIOUS_ENCODER_VAL);
+    #endif
   #endif
   updateScaledValues();
 }
@@ -112,7 +121,9 @@ void setup() {
   #ifdef JOYSTICK_ENABLE
     Joystick.begin();
     Joystick.setXAxisRange(JS_VAL_MIN, JS_VAL_MAX);
-    Joystick.setYAxisRange(ENCODER_MIN_VAL, ENCODER_MAX_VAL);
+    #ifdef TWO_AXIS
+      Joystick.setYAxisRange(ENCODER_MIN_VAL, ENCODER_MAX_VAL);
+    #endif
   #else
     Serial.begin(9600);
   #endif
@@ -187,7 +198,9 @@ void loop() {
   #ifdef JOYSTICK_ENABLE
     if(armed) {
       Joystick.setXAxis(JS_AXIS_VAL);
-      Joystick.setYAxis(PREVIOUS_ENCODER_VAL);
+      #ifdef TWO_AXIS
+        Joystick.setYAxis(PREVIOUS_ENCODER_VAL);
+      #endif
     }
   #else
     Serial.print("PREVIOUS ENCODER VAL: ");
