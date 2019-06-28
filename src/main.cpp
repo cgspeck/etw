@@ -27,8 +27,14 @@
 #define  B_PHASE 3
 
 // RESET BUTTON
-#define PIN_IN_RESET 13
+#define PIN_IN_RESET 11
 unsigned int inputResetButtonHistory = 0;
+
+// ARM (A)/DISARM (B) slide switch
+#define PIN_IN_ARM 12
+#define PIN_IN_DISARM 13
+unsigned long previousModeChanged = 0;
+bool armed = true;
 
 // DISPLAY
 #define LATCH_PIN 10
@@ -38,7 +44,7 @@ unsigned int inputResetButtonHistory = 0;
   Joystick_ Joystick(
     JOYSTICK_DEFAULT_REPORT_ID, 
     JOYSTICK_TYPE_JOYSTICK,
-    0,
+    2,
     0,
     true, true, false,
     false, false, false,
@@ -96,6 +102,8 @@ void setup() {
   ENCODER_MIN_VAL = ENCODER_MAX_VAL * -1;
   resetVals();
   pinMode(PIN_IN_RESET, INPUT_PULLUP);
+  pinMode(PIN_IN_ARM, INPUT_PULLUP);
+  pinMode(PIN_IN_DISARM, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(PIN_IN_RESET), resetVals, RISING);
   pinMode(A_PHASE, INPUT);
   pinMode(B_PHASE, INPUT);
@@ -153,9 +161,34 @@ void loop() {
     resetVals();
   }
 
+  bool modeChanged = false;
+  unsigned long currentMillis = millis();
+
+  if (armed && !digitalRead(PIN_IN_DISARM)) {
+    armed = false;
+    modeChanged = true;
+  } else if (!armed && !digitalRead(PIN_IN_ARM)) {
+    armed = true;
+    modeChanged = true;
+  }
+
+  if (modeChanged) {
+    #ifndef JOYSTICK_ENABLE
+      Serial.println("************************** MODE CHANGED **************************");
+    #endif
+    previousModeChanged = currentMillis;
+    Joystick.pressButton(armed ? 0 : 1);
+  } else if ((unsigned long)(currentMillis - previousModeChanged) > 1000)
+  {
+    Joystick.releaseButton(0);
+    Joystick.releaseButton(1);
+  }
+
   #ifdef JOYSTICK_ENABLE
-    Joystick.setXAxis(JS_AXIS_VAL);
-    Joystick.setYAxis(PREVIOUS_ENCODER_VAL);
+    if(armed) {
+      Joystick.setXAxis(JS_AXIS_VAL);
+      Joystick.setYAxis(PREVIOUS_ENCODER_VAL);
+    }
   #else
     Serial.print("PREVIOUS ENCODER VAL: ");
     Serial.println(PREVIOUS_ENCODER_VAL);
@@ -163,6 +196,8 @@ void loop() {
     Serial.println(JS_AXIS_VAL);
     Serial.print("SCALED VAL: ");
     Serial.println(scaledVal);
+    Serial.print("ARMED: ");
+    Serial.println(armed);
   #endif
   showNumber(scaledVal, LATCH_PIN);
 }
