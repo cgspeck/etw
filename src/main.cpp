@@ -30,6 +30,7 @@
 // RESET BUTTON
 #define PIN_IN_RESET 11
 unsigned int inputResetButtonHistory = 0;
+unsigned long previousReset = 0;
 
 // ARM (A)/DISARM (B) slide switch
 #define PIN_IN_ARM 12
@@ -45,7 +46,7 @@ bool armed = true;
   Joystick_ Joystick(
     JOYSTICK_DEFAULT_REPORT_ID, 
     JOYSTICK_TYPE_JOYSTICK,
-    2,
+    3,
     0,
     true,
     #ifdef TWO_AXIS
@@ -58,6 +59,8 @@ bool armed = true;
     false, false, false, false, false
   );
 #endif
+
+int JS_BUTTON_INTERVAL = 500;
 
 int JS_MIDPOINT = round((JS_VAL_MIN + (float)JS_VAL_MAX) / 2);
 int JS_AXIS_VAL;
@@ -161,6 +164,8 @@ void loop() {
 
   updateButton(&inputResetButtonHistory, PIN_IN_RESET);
 
+  unsigned long currentMillis = millis();
+
   if (isButtonPressed(&inputResetButtonHistory)) {
     /* Reset button has just been released.
       
@@ -170,10 +175,13 @@ void loop() {
       Serial.println("************************** RESET **************************");
     #endif
     resetVals();
+    previousReset = currentMillis;
+    Joystick.pressButton(2);
+  } else if ((unsigned long)(currentMillis - previousReset) > JS_BUTTON_INTERVAL) {
+    Joystick.releaseButton(2);
   }
 
   bool modeChanged = false;
-  unsigned long currentMillis = millis();
 
   if (armed && !digitalRead(PIN_IN_DISARM)) {
     armed = false;
@@ -189,7 +197,7 @@ void loop() {
     #endif
     previousModeChanged = currentMillis;
     Joystick.pressButton(armed ? 0 : 1);
-  } else if ((unsigned long)(currentMillis - previousModeChanged) > 1000)
+  } else if ((unsigned long)(currentMillis - previousModeChanged) > JS_BUTTON_INTERVAL)
   {
     Joystick.releaseButton(0);
     Joystick.releaseButton(1);
