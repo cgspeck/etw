@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+
+<!--
+************************************************************************
+* cgspeck Elevator Trim Wheel
+*
+* Axis 0 : Elevator Trim
+************************************************************************
+-->
+
+<PropertyList>
+
+ <name>USB IO Board</name>
+
+ <axis n="0">
+  <desc>Elevator Trim</desc>
+  <binding>
+   <command>property-scale</command>
+   <property>/controls/flight/elevator-trim</property>
+   <factor>1.0</factor>
+  </binding>
+ </axis>
+
+</PropertyList>
