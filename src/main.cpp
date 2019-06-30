@@ -75,12 +75,12 @@ void processPulse() {
   // stuff that figures out direction and increments or decrements the counter
   char i;
   i = digitalRead(B_PHASE);
-  if (i == 1 && ENCODER_VAL > ENCODER_MIN_VAL) {
+  if (i == 1 && ENCODER_VAL < ENCODER_MAX_VAL) {
     // CCW
-    ENCODER_VAL -= 1;
-  } else if (ENCODER_VAL < ENCODER_MAX_VAL) {
-    // CW
     ENCODER_VAL += 1;
+  } else if (ENCODER_VAL > ENCODER_MIN_VAL) {
+    // CW
+    ENCODER_VAL -= 1;
   }
 }
 
