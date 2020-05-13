@@ -521,11 +521,11 @@ module EncoderClamp() {
         cube(dimensions);
         translate([offset, dimensions.y / 2, 0 ]) {
             cylinder_outer(dimensions.z, 1.5 + 0.2);
-            nutHole(3, tolerance=0.1);
+            nutHole(3);
         }
         translate([dimensions.x - offset, dimensions.y / 2, 0 ]) {
             cylinder_outer(dimensions.z, 1.5 + 0.2);
-            nutHole(3, tolerance=0.1);
+            nutHole(3);
         }
     }
 }
