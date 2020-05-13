@@ -402,7 +402,15 @@ module ClampScrewHead() {
     translate([0, 0, 20]) rotate([180, 0, 0]) difference() {
         cone_outer(20, m10_nut_hole_boss_width / 2, 25);
         nutHole(10);
+        translate([0, 0, 5]) nutHole(10);
         cylinder_mid(20, (10 / 2) + 0.2);
+        x_dist=19.6*.75;
+        y_dist=-20;
+        x_dim=10;
+        y_dim=abs(y_dist) * 2;
+        z_dim=10;
+        translate([-x_dist-x_dim, y_dist, 0]) cube([x_dim, y_dim, z_dim]);
+        translate([x_dist, y_dist, 0]) cube([x_dim, y_dim, z_dim]);
     }
 }
 
