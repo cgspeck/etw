@@ -2,7 +2,7 @@ use <MCAD/nuts_and_bolts.scad>
 use <MCAD/regular_shapes.scad>
 
 /* [ Basic ] */
-WHEEL_DIAMETER=125;
+WHEEL_DIAMETER=100;
 HUB_DIAMETER=40;
 HUB_THICKNESS=4;
 ENCODER_SHAFT_DIAMETER=6;
@@ -119,7 +119,7 @@ module _Shaft() {
     cylinder_outer(TOTAL_D_CUTOUT_HEIGHT, ENCODER_SHAFT_RADIUS, 64);
 }
 
-module Hub(use_nyloc=false) {
+module Hub(push_fit=true, use_nyloc=false) {
     m3_nyloc_nut_thicknes=4.00;
     m3_nut_thickness=2.4;
     actual_m3_nut_thickness=use_nyloc ? m3_nyloc_nut_thicknes : m3_nut_thickness;
@@ -140,11 +140,14 @@ module Hub(use_nyloc=false) {
     difference() {
         translate([0, 0, HUB_THICKNESS]) difference() {
             cylinder_outer(BOLT_SHAFT_LENGTH, BOLT_SHAFT_RADIUS, $fn);
-            // bolt hole
-            translate([1, 0, BOLT_SHAFT_LENGTH / 2]) rotate([0, 90, 0]) cylinder_outer(BOLT_SHAFT_RADIUS, BOLT_RADIUS, $fn);
-            // nut holes
-            translate([ENCODER_SHAFT_RADIUS, 0, BOLT_SHAFT_LENGTH / 2]) rotate([0, 90, 0]) scale([1, 1, nut_z_scale]) nutHole(3);
-            translate([0.1, 0, BOLT_SHAFT_LENGTH / 2]) rotate([0, 90, 0]) scale([1, 1, 1.4]) nutHole(3);
+
+            if (!push_fit) {
+                // bolt hole
+                translate([1, 0, BOLT_SHAFT_LENGTH / 2]) rotate([0, 90, 0]) cylinder_outer(BOLT_SHAFT_RADIUS, BOLT_RADIUS, $fn);
+                // nut holes
+                translate([ENCODER_SHAFT_RADIUS, 0, BOLT_SHAFT_LENGTH / 2]) rotate([0, 90, 0]) scale([1, 1, nut_z_scale]) nutHole(3);
+                translate([0.1, 0, BOLT_SHAFT_LENGTH / 2]) rotate([0, 90, 0]) scale([1, 1, 1.4]) nutHole(3);
+            }
         }
         _Shaft();
     }
