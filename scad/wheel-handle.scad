@@ -156,5 +156,3 @@ module Hub(push_fit=true, use_nyloc=false) {
 Handle();
 Spokes();
 Hub();
-
-translate([200, 0, 0]) HandleBrim();
