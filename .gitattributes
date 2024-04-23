@@ -1,0 +1,4 @@
+scad/_pins.scad linguist-vendored
+scad/arduino.scad linguist-vendored
+src/debounce.h linguist-language=C++
+src/display.h linguist-language=C++
